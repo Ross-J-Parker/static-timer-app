@@ -1,7 +1,10 @@
-// Function to start the timer
+let timerInterval;
+let startTime;
+let lapTimes = [];
+
 function startTimer(duration, display) {
-    var timer = duration, minutes, seconds;
-    setInterval(function () {
+    let timer = duration, minutes, seconds;
+    timerInterval = setInterval(function () {
         minutes = parseInt(timer / 60, 10);
         seconds = parseInt(timer % 60, 10);
 
@@ -16,31 +19,59 @@ function startTimer(duration, display) {
     }, 1000);
 }
 
-// Function to update the fastest lap information
-function updateFastestLap(athleteName, lapTime) {
-    var fastestLapBanner = document.getElementById('fastest-lap');
-    document.getElementById('athlete-name').textContent = athleteName;
-    document.getElementById('lap-time').textContent = lapTime;
-    fastestLapBanner.style.display = 'flex';  // Show the banner
+function startLap() {
+    startTime = new Date().getTime();
+    if (!timerInterval) {
+        startTimer(60 * 5, document.querySelector('#time')); // Restart timer if not already running
+    }
+}
 
-    // Store the fastest lap information in localStorage
-    localStorage.setItem('fastestLap', JSON.stringify({ athleteName, lapTime }));
+function stopLap() {
+    if (startTime) {
+        const endTime = new Date().getTime();
+        const lapTime = (endTime - startTime) / 1000; // Lap time in seconds
+        lapTimes.push(lapTime);
+        displayLapTimes();
+        updateFastestLap();
+        startTime = null;
+    }
+}
+
+function displayLapTimes() {
+    const lapList = document.getElementById('lap-list');
+    lapList.innerHTML = ''; // Clear existing lap times
+    lapTimes.forEach((lapTime, index) => {
+        const lapTimeElement = document.createElement('li');
+        lapTimeElement.textContent = `Lap ${index + 1}: ${lapTime.toFixed(2)} seconds`;
+        lapList.appendChild(lapTimeElement);
+    });
+}
+
+function updateFastestLap() {
+    if (lapTimes.length > 0) {
+        const fastestLapTime = Math.min(...lapTimes);
+        const fastestLapIndex = lapTimes.indexOf(fastestLapTime) + 1;
+        const fastestLapBanner = document.getElementById('fastest-lap');
+        document.getElementById('athlete-name').textContent = `Lap ${fastestLapIndex}`;
+        document.getElementById('lap-time').textContent = `${fastestLapTime.toFixed(2)} seconds`;
+        fastestLapBanner.style.display = 'flex'; // Show the banner
+
+        // Store the fastest lap information in localStorage
+        localStorage.setItem('fastestLap', JSON.stringify({ athleteName: `Lap ${fastestLapIndex}`, lapTime: fastestLapTime.toFixed(2) }));
+    }
 }
 
 // Initialize the timer when the window loads
 window.onload = function () {
-    var fiveMinutes = 60 * 5,
-        display = document.querySelector('#time');
+    const fiveMinutes = 60 * 5;
+    const display = document.querySelector('#time');
     startTimer(fiveMinutes, display);
 
     // Retrieve the fastest lap information from localStorage
-    var fastestLap = JSON.parse(localStorage.getItem('fastestLap'));
+    const fastestLap = JSON.parse(localStorage.getItem('fastestLap'));
     if (fastestLap) {
-        updateFastestLap(fastestLap.athleteName, fastestLap.lapTime);
+        document.getElementById('athlete-name').textContent = fastestLap.athleteName;
+        document.getElementById('lap-time').textContent = fastestLap.lapTime;
+        document.getElementById('fastest-lap').style.display = 'flex';
     }
-
-    // Example of updating the fastest lap
-    setTimeout(function() {
-        updateFastestLap('John Doe', '04:30');
-    }, 3000);  // This is just an example, you can update it based on your logic
 };
