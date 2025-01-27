@@ -17,3 +17,25 @@ body {
 .fastest-lap i {
     margin-right: 10px;
 }
+
+button {
+    margin: 5px;
+    padding: 10px;
+    font-size: 16px;
+}
+
+#lap-times {
+    margin-top: 20px;
+}
+
+#lap-list {
+    list-style-type: none;
+    padding: 0;
+}
+
+#lap-list li {
+    margin: 5px 0;
+    padding: 10px;
+    background-color: #f0f0f0;
+    border-radius: 5px;
+}
