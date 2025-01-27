@@ -1,0 +1,19 @@
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    margin-top: 50px;
+}
+
+.fastest-lap {
+    background-color: purple;
+    color: white;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 5px;
+    display: none; /* Initially hidden */
+    align-items: center;
+}
+
+.fastest-lap i {
+    margin-right: 10px;
+}
